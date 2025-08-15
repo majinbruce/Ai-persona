@@ -1,3 +1,16 @@
+// Global error handlers first
+process.on('uncaughtException', (error) => {
+  console.error('❌ UNCAUGHT EXCEPTION:', error.message);
+  console.error('Stack:', error.stack);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.error('❌ UNHANDLED REJECTION:', reason);
+  console.error('Promise:', promise);
+  process.exit(1);
+});
+
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -136,20 +149,32 @@ process.on('SIGINT', () => gracefulShutdown('SIGINT'));
 // Start server
 const startServer = async () => {
   try {
+    console.log('🔄 Starting server initialization...');
+    console.log('📊 Environment:', process.env.NODE_ENV);
+    console.log('🔑 OpenAI configured:', !!process.env.OPENAI_API_KEY);
+    console.log('🗄️ Database URL configured:', !!process.env.DATABASE_URL);
+    console.log('🚪 Port:', PORT);
+    
     // Connect to database
+    console.log('📡 Connecting to database...');
     await connectDatabase();
+    console.log('✅ Database connection successful');
     
     // Start HTTP server
-    const server = app.listen(PORT, () => {
-      logger.info(`🚀 Server running on port ${PORT}`);
+    console.log('🚀 Starting HTTP server...');
+    const server = app.listen(PORT, '0.0.0.0', () => {
+      const message = `🚀 Server running on port ${PORT}`;
+      console.log(message);
+      logger.info(message);
       logger.info(`📊 Environment: ${process.env.NODE_ENV}`);
       logger.info(`🔑 OpenAI API configured: ${!!process.env.OPENAI_API_KEY}`);
       logger.info(`🗄️ Database: PostgreSQL`);
       logger.info(`📝 Logging level: ${process.env.LOG_LEVEL || 'info'}`);
-      
-      console.log(`🚀 Server running on port ${PORT}`);
-      console.log(`📊 Environment: ${process.env.NODE_ENV}`);
-      console.log(`🔑 OpenAI API configured: ${!!process.env.OPENAI_API_KEY}`);
+    });
+    
+    server.on('error', (error) => {
+      console.error('❌ Server error:', error);
+      process.exit(1);
     });
     
     // Store server reference for graceful shutdown
@@ -157,8 +182,9 @@ const startServer = async () => {
     
     return server;
   } catch (error) {
+    console.error('❌ Failed to start server:', error.message);
+    console.error('❌ Stack trace:', error.stack);
     logger.error('Failed to start server:', error);
-    console.error('Failed to start server:', error);
     process.exit(1);
   }
 };
