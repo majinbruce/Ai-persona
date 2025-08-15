@@ -1,0 +1,7 @@
+client/
+data-prep/
+database/
+*.md
+.git/
+.env*
+!server/
