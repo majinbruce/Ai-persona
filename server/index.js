@@ -187,6 +187,15 @@ const startServer = async () => {
   }
 };
 
+// Debug environment variables (without exposing secrets)
+console.log('🔍 Environment Debug:');
+console.log('- NODE_ENV:', process.env.NODE_ENV);
+console.log('- PORT:', process.env.PORT);
+console.log('- DATABASE_URL configured:', !!process.env.DATABASE_URL);
+console.log('- OPENAI_API_KEY configured:', !!process.env.OPENAI_API_KEY);
+console.log('- JWT_SECRET configured:', !!process.env.JWT_SECRET);
+console.log('- CORS_ORIGIN:', process.env.CORS_ORIGIN);
+
 // Start the server
 if (require.main === module) {
   startServer();

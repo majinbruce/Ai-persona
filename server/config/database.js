@@ -51,14 +51,24 @@ const sequelize = process.env.DATABASE_URL
 
 const connectDatabase = async () => {
   try {
+    console.log('🔍 Database connection debug:');
+    console.log('- DATABASE_URL configured:', !!process.env.DATABASE_URL);
+    console.log('- Database URL preview:', process.env.DATABASE_URL?.substring(0, 30) + '...');
+    
+    console.log('⏳ Attempting database authentication...');
     await sequelize.authenticate();
+    console.log('✅ PostgreSQL connection established successfully');
     logger.info('✅ PostgreSQL connection established successfully');
     
     // Sync models - create tables if they don't exist
+    console.log('⏳ Synchronizing database models...');
     await sequelize.sync({ alter: false });
+    console.log('✅ Database models synchronized');
     logger.info('🔄 Database models synchronized');
     
   } catch (error) {
+    console.error('❌ Database connection failed:', error.message);
+    console.error('❌ Full error:', error);
     logger.error('❌ Unable to connect to PostgreSQL database:', error);
     logger.error('Database URL format should be: postgresql://user:pass@host:port/dbname');
     process.exit(1);
