@@ -1,13 +1,11 @@
-// Global error handlers first
+// Global error handlers for production
 process.on('uncaughtException', (error) => {
-  console.error('❌ UNCAUGHT EXCEPTION:', error.message);
-  console.error('Stack:', error.stack);
+  logger.error('Uncaught Exception:', error);
   process.exit(1);
 });
 
 process.on('unhandledRejection', (reason, promise) => {
-  console.error('❌ UNHANDLED REJECTION:', reason);
-  console.error('Promise:', promise);
+  logger.error('Unhandled Rejection:', reason);
   process.exit(1);
 });
 
