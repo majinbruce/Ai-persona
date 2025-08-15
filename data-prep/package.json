@@ -1,0 +1,17 @@
+{
+  "name": "data-prep",
+  "version": "1.0.0",
+  "description": "Data preparation scripts for persona analysis",
+  "main": "scraper.js",
+  "scripts": {
+    "scrape": "node scraper.js",
+    "process": "node processor.js"
+  },
+  "dependencies": {
+    "axios": "^1.6.2",
+    "cheerio": "^1.0.0-rc.12",
+    "youtube-transcript": "^1.0.6",
+    "twitter-api-v2": "^1.15.0",
+    "fs-extra": "^11.2.0"
+  }
+}
