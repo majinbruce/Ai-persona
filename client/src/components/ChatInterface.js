@@ -73,7 +73,7 @@ const ChatInterface = ({ user, onLogout }) => {
         config.headers = { Authorization: `Bearer ${token}` };
       }
 
-      const response = await axios.post('/api/chat', {
+      const response = await axios.post('/chat', {
         message: currentInput,
         persona: selectedPersona,
         conversationHistory: conversationHistory

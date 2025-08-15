@@ -19,7 +19,7 @@ const UserMenu = ({ user, onLogout }) => {
 
   const handleLogout = async () => {
     try {
-      await axios.post('/api/auth/logout');
+      await axios.post('/auth/logout');
     } catch (error) {
       console.error('Logout error:', error);
     } finally {
