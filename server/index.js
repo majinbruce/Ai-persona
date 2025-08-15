@@ -91,6 +91,15 @@ app.use(compression());
 app.use(requestLogger);
 app.use(securityLogger);
 
+// Basic ping endpoint (no database required)
+app.get('/ping', (req, res) => {
+  res.status(200).json({ 
+    status: 'alive',
+    timestamp: new Date().toISOString(),
+    port: process.env.PORT || 5000
+  });
+});
+
 // Health check endpoint (before auth)
 app.get('/api/health', (req, res) => {
   res.status(200).json({ 
@@ -153,12 +162,7 @@ const startServer = async () => {
     console.log('🗄️ Database URL configured:', !!process.env.DATABASE_URL);
     console.log('🚪 Port:', PORT);
     
-    // Connect to database
-    console.log('📡 Connecting to database...');
-    await connectDatabase();
-    console.log('✅ Database connection successful');
-    
-    // Start HTTP server
+    // Start HTTP server first (so health checks can pass)
     console.log('🚀 Starting HTTP server...');
     const server = app.listen(PORT, '0.0.0.0', () => {
       const message = `🚀 Server running on port ${PORT}`;
@@ -166,7 +170,6 @@ const startServer = async () => {
       logger.info(message);
       logger.info(`📊 Environment: ${process.env.NODE_ENV}`);
       logger.info(`🔑 OpenAI API configured: ${!!process.env.OPENAI_API_KEY}`);
-      logger.info(`🗄️ Database: PostgreSQL`);
       logger.info(`📝 Logging level: ${process.env.LOG_LEVEL || 'info'}`);
     });
     
@@ -177,6 +180,18 @@ const startServer = async () => {
     
     // Store server reference for graceful shutdown
     global.server = server;
+    
+    // Connect to database after server is running
+    console.log('📡 Connecting to database...');
+    try {
+      await connectDatabase();
+      console.log('✅ Database connection successful');
+      logger.info(`🗄️ Database: PostgreSQL connected`);
+    } catch (dbError) {
+      console.error('⚠️ Database connection failed, but server is still running:', dbError.message);
+      logger.error('Database connection failed:', dbError);
+      // Don't exit - let server run without database for debugging
+    }
     
     return server;
   } catch (error) {
