@@ -1,11 +1,7 @@
 const { Sequelize } = require('sequelize');
 const logger = require('../utils/logger');
 
-// Force IPv4 DNS resolution for better compatibility
-const dns = require('dns');
-if (dns.setDefaultResultOrder) {
-  dns.setDefaultResultOrder('ipv4first');
-}
+// Note: Railway supports IPv6 natively, so no special DNS configuration needed
 
 // Use DATABASE_URL for production (Supabase/Railway) or individual vars for development
 const sequelize = process.env.DATABASE_URL 
@@ -28,9 +24,7 @@ const sequelize = process.env.DATABASE_URL
         timestamps: true,
         underscored: true,
         paranoid: true,
-      },
-      // Force IPv4 to avoid IPv6 connection issues
-      host: 'db.xrjcmygvozvjxsmyhwgr.supabase.co'
+      }
     })
   : new Sequelize(
       process.env.DB_NAME || 'persona_chatbot',
