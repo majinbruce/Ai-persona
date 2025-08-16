@@ -1,7 +1,8 @@
 const { Sequelize } = require('sequelize');
 const logger = require('../utils/logger');
 
-// Note: Railway supports IPv6 natively, so no special DNS configuration needed
+// Try to use IPv4 address directly instead of hostname
+const dns = require('dns').promises;
 
 // Use DATABASE_URL for production (Supabase/Railway) or individual vars for development
 const sequelize = process.env.DATABASE_URL 
@@ -62,7 +63,7 @@ const connectDatabase = async () => {
     
     // Sync models - create tables if they don't exist
     console.log('⏳ Synchronizing database models...');
-    await sequelize.sync({ alter: false });
+    await sequelize.sync({ alter: true });
     console.log('✅ Database models synchronized');
     logger.info('🔄 Database models synchronized');
     
