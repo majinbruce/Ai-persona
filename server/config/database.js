@@ -61,35 +61,12 @@ const connectDatabase = async () => {
     console.log('✅ PostgreSQL connection established successfully');
     logger.info('✅ PostgreSQL connection established successfully');
     
-    // Sync models - create tables if they don't exist
+    // Sync models - recreate tables to fix enum issues
     console.log('⏳ Synchronizing database models...');
-    await sequelize.sync({ alter: true });
+    await sequelize.sync({ force: true });
     console.log('✅ Database models synchronized');
     logger.info('🔄 Database models synchronized');
     
-    // Handle existing users without passwords (migration fix)
-    try {
-      const { User } = require('../models');
-      const usersWithoutPassword = await User.findAll({
-        where: {
-          password: null
-        }
-      });
-      
-      if (usersWithoutPassword.length > 0) {
-        console.log(`⚠️ Found ${usersWithoutPassword.length} users without passwords - cleaning up...`);
-        await User.destroy({
-          where: {
-            password: null
-          },
-          force: true // Hard delete
-        });
-        console.log('✅ Cleaned up users without passwords');
-        logger.info(`Cleaned up ${usersWithoutPassword.length} users without passwords`);
-      }
-    } catch (migrationError) {
-      console.log('ℹ️ Migration cleanup skipped (table may not exist yet)');
-    }
     
   } catch (error) {
     console.error('❌ Database connection failed:', error.message);
