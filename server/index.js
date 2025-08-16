@@ -55,8 +55,15 @@ app.use(generalLimiter);
 // CORS configuration
 app.use(cors({
   origin: function (origin, callback) {
+    const corsOrigin = process.env.CORS_ORIGIN;
+    
+    // If CORS_ORIGIN is wildcard, allow all origins
+    if (corsOrigin === '*') {
+      return callback(null, true);
+    }
+    
     const allowedOrigins = [
-      process.env.CORS_ORIGIN,
+      corsOrigin,
       'http://localhost:3000',
       'http://127.0.0.1:3000'
     ].filter(Boolean);
