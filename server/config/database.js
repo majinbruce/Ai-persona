@@ -61,9 +61,9 @@ const connectDatabase = async () => {
     console.log('✅ PostgreSQL connection established successfully');
     logger.info('✅ PostgreSQL connection established successfully');
     
-    // Sync models - recreate tables to fix enum issues
+    // Sync models - create tables if they don't exist
     console.log('⏳ Synchronizing database models...');
-    await sequelize.sync({ force: true });
+    await sequelize.sync({ alter: false });
     console.log('✅ Database models synchronized');
     logger.info('🔄 Database models synchronized');
     
