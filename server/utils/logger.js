@@ -51,15 +51,18 @@ const logger = winston.createLogger({
   ],
 });
 
-// Console logging for non-production
-if (process.env.NODE_ENV !== 'production') {
-  logger.add(new winston.transports.Console({
-    format: winston.format.combine(
-      winston.format.colorize(),
-      winston.format.simple()
-    )
-  }));
-}
+// Console logging for all environments (Railway needs this)
+logger.add(new winston.transports.Console({
+  format: process.env.NODE_ENV === 'production' 
+    ? winston.format.combine(
+        winston.format.timestamp(),
+        winston.format.simple()
+      )
+    : winston.format.combine(
+        winston.format.colorize(),
+        winston.format.simple()
+      )
+}));
 
 // Custom logging methods
 logger.api = (method, url, statusCode, responseTime, userId) => {
