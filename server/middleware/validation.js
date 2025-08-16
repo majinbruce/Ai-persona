@@ -56,12 +56,14 @@ const userRegistrationSchema = Joi.object({
   firstName: Joi.string()
     .min(2)
     .max(50)
-    .optional(),
+    .optional()
+    .allow(''),
     
   lastName: Joi.string()
     .min(2)
     .max(50)
     .optional()
+    .allow('')
 });
 
 const userLoginSchema = Joi.object({
